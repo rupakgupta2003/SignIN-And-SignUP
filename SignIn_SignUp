@@ -1,0 +1,162 @@
+d={'admin':'Qwerty123'}
+que=[]
+a=[]
+
+
+leader={'name':['admin'],
+       'points':[0]}
+
+def checkPasswordStrength(passw):
+    strength=0
+    if len(passw)>=8:
+        strength+=1
+    upper=0
+    lower=0
+    for i in passw:
+        if i.islower()==True:
+            lower+=1
+        elif i.isupper()==True:
+            upper+=1
+    if lower>=1 and upper>=1:
+        strength+=1
+
+    for i in range(len(passw)):
+        ch=passw[i]
+        if  ch.isdigit()==True :
+            strength+=1
+    for r in range(0,len(passw)):
+        sp=passw[r]
+        if (passw[r].isalpha()):
+            continue
+        elif (passw[r].isdigit()):
+            continue
+        else:
+            strength+=1
+    if strength>=4:
+        print("password is strong")
+        return True
+    else:
+        print('''password is weak''')
+        print('''enter details and password again.....''')
+        return False
+
+def signUp():
+    while 1:
+        userUp=input("enter a new username: ").lower()
+        print("-----------------------------------------------------------------------")
+        if userUp=='0':
+            return 'Failed'
+        if userUp not in d:
+            passUp=input("enter a strong password: ")
+            if checkPasswordStrength(passUp):
+                st1=3
+                while st1:
+                    passUp2=input("plz enter your password again: ")
+                    print("-----------------------------------------------------------------------")
+                    if passUp==passUp2:
+                        d.update({userUp:passUp})      #d[userUp]=passUp
+                        print("for recovery Password Question is: ")
+                        q=input("what is your school name: ").lower()
+                        que.append({userUp:q})
+                        print("-----------------------------------------------------------------------")
+                        return 'successful'
+                    
+                    else:
+                        print('password does not match...Please try again...')
+                        st1-=1
+                return 'Failed'
+        else:
+            print('''user name already exists....please try another...
+            press 0 to exit 
+            or ''')
+# signUp()
+
+def signIn():
+    while 1:
+        userIn=input("enter username:").lower()
+        if userIn=='0':
+            return 'Exit Successfully'
+        if userIn in d:
+            sf1=3
+            while sf1:
+                passIn=input("enter password:")
+                print("-----------------------------------------------------------------------")
+                if d[userIn]==passIn:                   
+                    return 'Successful'
+                else:
+                    print("Password doesn't match.... please try again.....")
+                    rec=input('''if forget password,
+press 1 to recover with security question,
+press 2 for change by OTP:
+press any other key to try enter again password:''')
+                    if  rec=='1':
+                        q=input("what is your school Name")
+                        if q==que[0][userIn]:
+                            print(f"your password is : {d.get(userIn)}")
+                            newpass=input("enter new password: ")
+                            d.update({userIn:newpass})
+                            print("-----------------------------------------------------------------------")
+                        else:
+                            print("answer not correct ....Thank you")
+                            print("-----------------------------------------------------------------------")
+                            sf1-=1
+                    elif rec=='2':
+                        import random
+                        c=random.randint(1000,9999)
+                        msg="your OTP is "+str(c)
+                        import os
+                        from twilio.rest import Client
+                        account_sid = "AC549423070ce8ec8cf8219eed8fe1f662"
+                        auth_token = "71fe69d0a8892d9f60c244c5d6c4329c"
+                        client = Client(account_sid, auth_token)
+                        message = client.messages.create(
+                          body="For  change your password , Your OTP is "+str(c),
+                          from_="+14344236673",
+                          to="+917489035993"
+                        )
+                        print(message.sid)
+                        g=int(input("enter OTP: "))
+                        newpass=input("enter new password: ")
+                        d.update({userIn:newpass})
+                        
+                        if g==c:
+                            print("password has been changed")
+                            print("-----------------------------------------------------------------------")
+                        else:
+                            print("invalid OTP.....Thank you")
+                            print("-----------------------------------------------------------------------")
+                    else:
+                        sf1-=1
+                   
+                    
+            return 'Failed'
+        else:
+            print('''Username does not exist..please try again...
+                 press 0 to exit
+                 or''')
+# signIn()
+
+while(1):
+    mode=input('''choose mode:
+    press 1 to SignUp
+    press 2 to SignIn
+    press 0 to exit:
+    ''')
+    if mode=='1':
+        x=signUp()
+        print('signUp',x)
+        print("-----------------------------------------------------------------------")
+    elif(mode=='2'):
+        z=signIn()
+        print('signIn',z)
+        print("-----------------------------------------------------------------------")
+    elif mode=='0':
+        print('Thank You for using our services...')
+        break
+#     elif mode=='3':
+#         import pandas as pd
+#         a=pd.DataFrame(leader,index=[x for x in range(len(leader['name']))])
+#         print(a.sort_values('points',ascending=False))
+    else:
+        print('enter a valid input...')
+        print("-----------------------------------------------------------------------")
